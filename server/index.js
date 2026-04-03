@@ -26,8 +26,8 @@ app.post('/api/search', async (req, res) => {
   }
 
   try {
-    const results = await scrapeAlignableLeads({ keyword, location, pages });
-    res.json({ results, total: results.length });
+    const { businesses, citySlug, warning } = await scrapeAlignableLeads({ keyword, location, pages });
+    res.json({ results: businesses, total: businesses.length, citySlug, warning });
   } catch (err) {
     console.error('[scraper error]', err.message);
     res.status(500).json({ error: err.message || 'Scraping failed.' });

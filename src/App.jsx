@@ -8,11 +8,14 @@ function App() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [warning, setWarning] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [filterNoWebsite, setFilterNoWebsite] = useState(false);
 
   const handleSearch = async ({ keyword, location, pages }) => {
     setLoading(true);
     setError(null);
+    setWarning(null);
     setResults([]);
 
     try {
@@ -29,6 +32,7 @@ function App() {
 
       const data = await res.json();
       setResults(data.results);
+      if (data.warning) setWarning(data.warning);
       setSearched(true);
     } catch (err) {
       setError(err.message);
@@ -37,13 +41,19 @@ function App() {
     }
   };
 
+  const displayResults = filterNoWebsite
+    ? results.filter((r) => !r.descMentionsWebsite)
+    : results;
+
   const exportCSV = () => {
-    if (!results.length) return;
-    const headers = ['Name', 'Category', 'City', 'Profile URL'];
-    const rows = results.map((r) => [
-      `"${r.name}"`,
-      `"${r.category || ''}"`,
-      `"${r.city || ''}"`,
+    if (!displayResults.length) return;
+    const headers = ['Name', 'Category', 'City', 'Description', 'Website Mentioned in Desc', 'Profile URL'];
+    const rows = displayResults.map((r) => [
+      `"${(r.name || '').replace(/"/g, '""')}"`,
+      `"${(r.category || '').replace(/"/g, '""')}"`,
+      `"${(r.city || '').replace(/"/g, '""')}"`,
+      `"${(r.description || '').replace(/"/g, '""')}"`,
+      r.descMentionsWebsite ? 'Yes' : 'No',
       `"${r.profileUrl || ''}"`,
     ]);
     const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
@@ -66,15 +76,24 @@ function App() {
       <main>
         <SearchForm onSearch={handleSearch} loading={loading} />
 
+        {warning && (
+          <div className="status-bar status--warning">
+            ⚠️ {warning}
+          </div>
+        )}
+
         <StatusBar
           loading={loading}
           searched={searched}
-          count={results.length}
+          count={displayResults.length}
+          total={results.length}
+          filtered={filterNoWebsite}
           error={error}
           onExport={exportCSV}
+          onToggleFilter={() => setFilterNoWebsite((v) => !v)}
         />
 
-        {results.length > 0 && <ResultsTable results={results} />}
+        {displayResults.length > 0 && <ResultsTable results={displayResults} />}
       </main>
     </div>
   );

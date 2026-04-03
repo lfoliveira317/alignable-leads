@@ -135,6 +135,27 @@ body {
 }
 .btn-export:hover { opacity: 0.85; }
 
+.btn-filter {
+  background: #2a3250;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-left: 0.5rem;
+}
+.btn-filter:hover { background: #36407a; }
+
+.status--warning {
+  background: #2a2210;
+  border: 1px solid #5e4a10;
+  color: #e0c060;
+}
+
+
 /* ── Results Table ── */
 .results-wrapper {
   overflow-x: auto;
@@ -168,5 +189,11 @@ body {
 .results-table tr:hover td { background: rgba(255,255,255,0.02); }
 .results-table .num { color: var(--text-muted); font-size: 0.8rem; width: 40px; }
 .results-table .name { font-weight: 600; }
+.results-table .desc { color: var(--text-muted); font-size: 0.82rem; max-width: 260px; }
 .results-table a { color: var(--accent); text-decoration: none; }
 .results-table a:hover { text-decoration: underline; }
+
+/* Website badge */
+.badge { font-size: 0.8rem; white-space: nowrap; }
+.badge--no  { color: #5fdba0; }
+.badge--yes { color: var(--text-muted); }

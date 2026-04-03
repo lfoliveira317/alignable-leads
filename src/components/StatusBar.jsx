@@ -1,4 +1,4 @@
-export default function StatusBar({ loading, searched, count, error, onExport }) {
+export default function StatusBar({ loading, searched, count, total, filtered, error, onExport, onToggleFilter }) {
   if (loading) {
     return (
       <div className="status-bar status--loading">
@@ -20,13 +20,34 @@ export default function StatusBar({ loading, searched, count, error, onExport })
       <div className="status-bar status--success">
         {count > 0 ? (
           <>
-            ✅ Found <strong>{count}</strong> businesses without a website.
+            ✅ Showing <strong>{count}</strong>
+            {filtered && total !== count ? ` of ${total}` : ''} businesses
+            {filtered ? ' (no-website hint filter ON)' : ''}.
+
+            <button
+              className="btn-filter"
+              onClick={onToggleFilter}
+              title="Filter to businesses whose description doesn't mention a website"
+            >
+              {filtered ? '🔓 Show All' : '🔍 Filter: No Website Hint'}
+            </button>
+
             <button className="btn-export" onClick={onExport}>
               ⬇ Export CSV
             </button>
           </>
         ) : (
-          '🔎 No businesses without websites found. Try a different keyword or location.'
+          <>
+            🔎 No businesses found.{' '}
+            {filtered && total > 0
+              ? `${total} total — try turning off the filter.`
+              : 'Try a different keyword or location.'}
+            {total > 0 && (
+              <button className="btn-filter" onClick={onToggleFilter}>
+                🔓 Show All ({total})
+              </button>
+            )}
+          </>
         )}
       </div>
     );
